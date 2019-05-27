@@ -55,10 +55,26 @@ public class SushiData : MonoBehaviour
         if (other.tag == "Sushi")
         {
             Debug.Log("soy sushi y detecto sushi");
-            rb.AddForce(new Vector3(0, 1, -1)*2000, ForceMode.Force);
+            rb.AddForce(new Vector3(0, 1, -1) * 2000, ForceMode.Force);
+            time.StartTimer = true;
+            destoyObject = true;
+        }
+        else if (other.tag == "izquierda palillos")
+        {
+            Debug.Log("soy sushi y detecto sushi");
+            rb.AddForce(new Vector3(1, 1, 0) * 3000, ForceMode.Force);
+            time.StartTimer = true;
+            destoyObject = true;
+        }
+        else if (other.tag == "derecha palillos")
+        {
+            Debug.Log("soy sushi y detecto sushi");
+            rb.AddForce(new Vector3(-1, 1, 0) * 3000, ForceMode.Force);
             time.StartTimer = true;
             destoyObject = true;
         }
     }
+
+    
 
 }

@@ -127,9 +127,17 @@ public class SushiController : MonoBehaviour
 
     private void CreateAllSushi()
     {
-        CreateCenterSushi(0, 5);
-        CreateLeftSushi(0, 4);
-        CreatRightSushi(0, 2);
+        int centerSushiIndex=GetRandomNumber(0,sushiPrefabs.Count);
+        int leftSushiIndex = GetRandomNumber(0, sushiPrefabs.Count); 
+        int rightSushiIndex = GetRandomNumber(0, sushiPrefabs.Count); 
+
+        int centerTime = GetRandomNumber(2, 5);
+        int leftTime = GetRandomNumber  (2, 5);
+        int rightTime = GetRandomNumber (2, 5);
+
+        CreateCenterSushi(centerSushiIndex, centerTime);
+        CreateLeftSushi  (leftSushiIndex, leftTime);
+        CreatRightSushi  (rightSushiIndex, rightTime);
     }
 
     private void CreateCenterSushi(int sushiIndex, float newTime)
@@ -173,17 +181,17 @@ public class SushiController : MonoBehaviour
     {
         //Center time
         centerTimer = new Timer();
-        centerTimer.SetTime(3);
+        centerTimer.SetTime(GetRandomNumber(2,5));
         centerTimer.StartTimer = true;
 
         //Right time
         rightTimer = new Timer();
-        rightTimer.SetTime(3);
+        rightTimer.SetTime(GetRandomNumber(2, 5));
         rightTimer.StartTimer = true;
 
         //left time
         leftTimer = new Timer();
-        leftTimer.SetTime(3);
+        leftTimer.SetTime(GetRandomNumber(2, 5));
         leftTimer.StartTimer = true;
 
 
@@ -207,7 +215,10 @@ public class SushiController : MonoBehaviour
             MoveToPointState();
 #endif
 #if UNITY_ANDROID
-
+        if (!startMoving)
+            CheckSwipeEditor();
+        else
+            MoveToPointState();
 #endif
     }
 
@@ -223,27 +234,49 @@ public class SushiController : MonoBehaviour
         if (Input.GetMouseButtonUp(0))
         {
             Debug.Log("realese");
-            float distanceSwipe = Mathf.Abs(touchStart.x - touchEnd.x);
-            if (distanceSwipe > minimumSwipe)
-            {
-                CheckDirection();
-                startMoving = true;
-            }
+            
+                CheckDirection();        
         }
     }
     private void CheckSwipeAndroid()
     {
+        foreach (Touch touch in Input.touches)
+        {
+            if (touch.phase == TouchPhase.Began)
+            {
+                touchStart = touch.position;
+                touchEnd = touch.position;
+            }
 
+            if (touch.phase == TouchPhase.Moved)
+            {
+                touchEnd = touch.position;
+                CheckDirection();
+            }
+
+            //Detecta swipes completos solos
+            if (touch.phase == TouchPhase.Ended)
+            {
+                touchEnd = touch.position;
+                CheckDirection();
+            }
+        }
     }
 
     private void CheckDirection()
     {
-        if (startMoving)
-            return;
-        if (touchStart.x - touchEnd.x > 0)
-            direction = "left";
-        else if (touchStart.x - touchEnd.x < 0)
-            direction = "right";
+        float distanceSwipe = Mathf.Abs(touchStart.x - touchEnd.x);
+        if (distanceSwipe > minimumSwipe)
+        {
+            if (startMoving)
+                return;
+            if (touchStart.x - touchEnd.x > 0)
+                direction = "left";
+            else if (touchStart.x - touchEnd.x < 0)
+                direction = "right";
+
+            startMoving = true;
+        }
 
     }
 
@@ -308,7 +341,7 @@ public class SushiController : MonoBehaviour
     {
         CanReturnCupstick = true;
         chopstick.transform.parent = transform;
-        
+
     }
 
     void MoveBackChopstick()
@@ -319,8 +352,16 @@ public class SushiController : MonoBehaviour
             CanReturnCupstick = false;
             return;
         }
-           
+
         ch.MoveTo(endCenterPoint.transform.position);
+    }
+
+    //Other stuff
+
+   
+    private int GetRandomNumber(int rangeStart, int rangeEnd)
+    {
+        return Random.Range(rangeStart, rangeEnd);
     }
 
 }
