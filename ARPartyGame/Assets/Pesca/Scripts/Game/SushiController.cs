@@ -146,6 +146,7 @@ public class SushiController : MonoBehaviour
         {
             GameObject sushi = Instantiate(sushiPrefabs[sushiIndex], startCenterPoint.transform.position, Quaternion.identity);
             sushi.transform.parent = transform;
+            sushi.transform.localScale = new Vector3(1, 1, 1);
             centerTimer.RestartTime(newTime);
             sushi.GetComponent<SushiData>().canMove = true;
             centerSushi.Add(sushi);
@@ -158,6 +159,7 @@ public class SushiController : MonoBehaviour
         {
             GameObject sushi = Instantiate(sushiPrefabs[sushiIndex], startLeftPoint.transform.position, Quaternion.identity);
             sushi.transform.parent = transform;
+            sushi.transform.localScale = new Vector3(1, 1, 1);
             leftTimer.RestartTime(newTime);
             sushi.GetComponent<SushiData>().canMove = true;
             leftSushi.Add(sushi);
@@ -170,6 +172,7 @@ public class SushiController : MonoBehaviour
         {
             GameObject sushi = Instantiate(sushiPrefabs[sushiIndex], startRightPoint.transform.position, Quaternion.identity);
             sushi.transform.parent = transform;
+            sushi.transform.localScale = new Vector3(1, 1, 1);
             rightTimer.RestartTime(newTime);
             sushi.GetComponent<SushiData>().canMove = true;
             rightSushi.Add(sushi);
