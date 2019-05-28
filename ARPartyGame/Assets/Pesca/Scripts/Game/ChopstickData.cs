@@ -7,15 +7,19 @@ public enum State { CENTER, RIGHT, LEFT };
 
 public class ChopstickData : MonoBehaviour
 {
-  
+
+    [SerializeField] bool vuforiaActive;
     [SerializeField] float speed;
+    [SerializeField] float VuforiaSpeed;
+    
     [SerializeField] GameObject plate;
     [SerializeField] Camera cam;
     [SerializeField] Transform camReference;
     [SerializeField] UnityEngine.UI.Button grab;
     public State chopstickState;
-    bool haveSushi = false;
-    GameObject sushi;
+    public bool haveSushi = false;
+    public bool letGoSushi = false;
+    public GameObject sushi;
     // Start is called before the first frame update
     void Start()
     {
@@ -30,8 +34,13 @@ public class ChopstickData : MonoBehaviour
     }
     public void MoveTo(Vector3 endPoint)
     {
+        float speedResult = 0;
+        if (vuforiaActive)
+            speedResult = VuforiaSpeed;
+        else
+            speedResult = speed;
         Vector3 direction = endPoint - transform.position;
-        transform.Translate(direction.normalized * speed * Time.deltaTime);
+        transform.Translate(direction.normalized * speedResult * Time.deltaTime);
     }
 
     public bool CheckFinish(Vector3 endPoint, float pointDistance)
@@ -68,6 +77,7 @@ public class ChopstickData : MonoBehaviour
         sushi.transform.parent = transform;
         transform.parent = cam.gameObject.transform;
         haveSushi = true;
+        letGoSushi = false;
     }
 
     public void MoveToCamera()
@@ -82,10 +92,11 @@ public class ChopstickData : MonoBehaviour
     {
         if(haveSushi)
         {
-           sushi.transform.parent = plate.transform;
+            sushi.transform.parent = plate.transform;
             sushi.GetComponent<Rigidbody>().useGravity=true;
             haveSushi = false;
             grab.interactable = false;
+            letGoSushi = true;
         }
     }
 }

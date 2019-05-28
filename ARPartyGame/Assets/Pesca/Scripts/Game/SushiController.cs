@@ -15,7 +15,7 @@ public class SushiController : MonoBehaviour
     [SerializeField] GameObject endRightPoint;
 
     [Header("Sushi Behaviour")]
-    [SerializeField] List<GameObject> sushiPrefabs;
+    public List<GameObject> sushiPrefabs;
     [SerializeField] float pointDistanceSushi;
 
 
@@ -34,6 +34,7 @@ public class SushiController : MonoBehaviour
     List<GameObject> centerSushi;
     List<GameObject> leftSushi;
     List<GameObject> rightSushi;
+
 
     //Timers
     Timer centerTimer;
@@ -54,15 +55,16 @@ public class SushiController : MonoBehaviour
 
     void Update()
     {
-
-        CreateAllSushi();
-        UpdateAllTimers(Time.deltaTime);
-        MoveAllSushi();
-        if (!CanReturnCupstick)
-            MoveChopstick();
-        else
-            MoveBackChopstick();
-
+        if (!chopstick.GetComponent<ChopstickData>().haveSushi)
+        {
+            CreateAllSushi();
+            UpdateAllTimers(Time.deltaTime);
+            MoveAllSushi();
+            if (!CanReturnCupstick)
+                MoveChopstick();
+            else
+                MoveBackChopstick();
+        }
     }
 
     //Move sushi
@@ -77,11 +79,14 @@ public class SushiController : MonoBehaviour
     {
         for (int i = 0; i < centerSushi.Count; i++)
         {
+            
             SushiData sushi = centerSushi[i].GetComponent<SushiData>();
+            if(sushi.destoyObject)
+                centerSushi.RemoveAt(i);
             if (sushi.CheckFinish(endCenterPoint.transform.position, pointDistanceSushi) || sushi.destoyObject)
             {
                 sushi.canMove = false;
-                centerSushi.RemoveAt(i);
+                //centerSushi.RemoveAt(i);
             }
 
             sushi.MoveTo(endCenterPoint.transform.position);
@@ -94,10 +99,12 @@ public class SushiController : MonoBehaviour
         for (int i = 0; i < leftSushi.Count; i++)
         {
             SushiData sushi = leftSushi[i].GetComponent<SushiData>();
+            if (sushi.destoyObject)
+                leftSushi.RemoveAt(i);
             if (sushi.CheckFinish(endLeftPoint.transform.position, pointDistanceSushi) || sushi.destoyObject)
             {
                 sushi.canMove = false;
-                leftSushi.RemoveAt(i);
+                //leftSushi.RemoveAt(i);
             }
 
             sushi.MoveTo(endLeftPoint.transform.position);
@@ -110,10 +117,13 @@ public class SushiController : MonoBehaviour
         for (int i = 0; i < rightSushi.Count; i++)
         {
             SushiData sushi = rightSushi[i].GetComponent<SushiData>();
+            if (sushi.destoyObject)
+                rightSushi.RemoveAt(i);
+            
             if (sushi.CheckFinish(endRightPoint.transform.position, pointDistanceSushi) || sushi.destoyObject)
             {
                 sushi.canMove = false;
-                rightSushi.RemoveAt(i);
+                // rightSushi.RemoveAt(i);
             }
 
             sushi.MoveTo(endRightPoint.transform.position);
@@ -127,17 +137,17 @@ public class SushiController : MonoBehaviour
 
     private void CreateAllSushi()
     {
-        int centerSushiIndex=GetRandomNumber(0,sushiPrefabs.Count);
-        int leftSushiIndex = GetRandomNumber(0, sushiPrefabs.Count); 
-        int rightSushiIndex = GetRandomNumber(0, sushiPrefabs.Count); 
+        int centerSushiIndex = GetRandomNumber(0, sushiPrefabs.Count);
+        int leftSushiIndex = GetRandomNumber(0, sushiPrefabs.Count);
+        int rightSushiIndex = GetRandomNumber(0, sushiPrefabs.Count);
 
         int centerTime = GetRandomNumber(2, 5);
-        int leftTime = GetRandomNumber  (2, 5);
-        int rightTime = GetRandomNumber (2, 5);
+        int leftTime = GetRandomNumber(2, 5);
+        int rightTime = GetRandomNumber(2, 5);
 
         CreateCenterSushi(centerSushiIndex, centerTime);
-        CreateLeftSushi  (leftSushiIndex, leftTime);
-        CreatRightSushi  (rightSushiIndex, rightTime);
+        CreateLeftSushi(leftSushiIndex, leftTime);
+        CreatRightSushi(rightSushiIndex, rightTime);
     }
 
     private void CreateCenterSushi(int sushiIndex, float newTime)
@@ -184,7 +194,7 @@ public class SushiController : MonoBehaviour
     {
         //Center time
         centerTimer = new Timer();
-        centerTimer.SetTime(GetRandomNumber(2,5));
+        centerTimer.SetTime(GetRandomNumber(2, 5));
         centerTimer.StartTimer = true;
 
         //Right time
@@ -212,7 +222,7 @@ public class SushiController : MonoBehaviour
     {
         ChopstickData chopstikBehaviour = chopstick.GetComponent<ChopstickData>();
 #if UNITY_EDITOR
-        if (!startMoving)
+        if (!startMoving&&!CanReturnCupstick)
             CheckSwipeEditor();
         else
             MoveToPointState();
@@ -237,8 +247,8 @@ public class SushiController : MonoBehaviour
         if (Input.GetMouseButtonUp(0))
         {
             Debug.Log("realese");
-            
-                CheckDirection();        
+
+            CheckDirection();
         }
     }
     private void CheckSwipeAndroid()
@@ -343,6 +353,7 @@ public class SushiController : MonoBehaviour
     public void ReturnChopstick()
     {
         CanReturnCupstick = true;
+        startMoving = false;
         chopstick.transform.parent = transform;
 
     }
@@ -352,6 +363,7 @@ public class SushiController : MonoBehaviour
         ChopstickData ch = chopstick.GetComponent<ChopstickData>();
         if (ch.CheckFinish(endCenterPoint.transform.position, pointDistanceChopstick))
         {
+            ch.chopstickState = State.CENTER;
             CanReturnCupstick = false;
             return;
         }
@@ -361,10 +373,59 @@ public class SushiController : MonoBehaviour
 
     //Other stuff
 
-   
+
     private int GetRandomNumber(int rangeStart, int rangeEnd)
     {
         return Random.Range(rangeStart, rangeEnd);
     }
 
+    public void UnableWater()
+    {
+        GetComponent<MeshRenderer>().enabled = true;
+    }
+    public void GrabSushi()
+    {
+        GetComponent<MeshRenderer>().enabled = false;
+        FindSushiInLane(centerSushi);
+        FindSushiInLane(leftSushi);
+        FindSushiInLane(rightSushi);
+        ClearWater();
+    }
+    private void ClearWater()
+    {
+        ClearAllLanes();
+        SetAllTimers();
+    }
+    private void ClearAllLanes()
+    {
+        ClearLane(centerSushi);
+        ClearLane(leftSushi);
+        ClearLane(rightSushi);
+    }
+    private void ClearLane(List<GameObject> list)
+    {
+        for (int i = 0; i < list.Count; i++)
+        {
+            Destroy(list[i]);
+        }
+        list.Clear();
+    }
+    private void FindSushiInLane(List<GameObject> lane)
+    {
+        for (int i = 0; i < lane.Count; i++)
+        {
+            if (lane[i] == chopstick.GetComponent<ChopstickData>().sushi)
+            {
+                lane.RemoveAt(i);
+                break;
+            }
+        }
+    }
+    private void SetIdSushi()
+    {
+        for (int i = 0; i < sushiPrefabs.Count; i++)
+        {
+            sushiPrefabs[i].GetComponent<SushiData>().id = i;
+        }
+    }
 }

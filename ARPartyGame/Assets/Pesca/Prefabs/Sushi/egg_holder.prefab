@@ -75,9 +75,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9f9451b7639cb12428cb9e04940f8b99, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  id: 0
+  vuforia: 0
+  id: 2
   canMove: 0
-  speed: 3
+  speed: 4
+  vuforiaSpeed: 0
   destoyObject: 0
 --- !u!1 &4319134241546523187
 GameObject:

@@ -6,6 +6,7 @@ using Vuforia;
 
 public class SushiTarget : MonoBehaviour, ITrackableEventHandler
 {
+   
     void Start()
     {
         mTrackableBehaviour = GetComponent<TrackableBehaviour>();
@@ -50,8 +51,7 @@ public class SushiTarget : MonoBehaviour, ITrackableEventHandler
         var rendererComponents = GetComponentsInChildren<Renderer>(true);
         var colliderComponents = GetComponentsInChildren<Collider>(true);
         var canvasComponents = GetComponentsInChildren<Canvas>(true);
-        var watherComponent = GetComponentInChildren<SushiController>(true);
-        var ChopstickComponent = GetComponentInChildren<ChopstickData>(true);
+        
         // Enable rendering:
         foreach (var component in rendererComponents)
             component.enabled = false;
@@ -64,9 +64,7 @@ public class SushiTarget : MonoBehaviour, ITrackableEventHandler
         foreach (var component in canvasComponents)
             component.enabled = false;
 
-        ChopstickComponent.enabled = false;
-
-        watherComponent.enabled = false;
+        
     }
 
     private void OnTrackingFound()
@@ -74,8 +72,7 @@ public class SushiTarget : MonoBehaviour, ITrackableEventHandler
         var rendererComponents = GetComponentsInChildren<Renderer>(true);
         var colliderComponents = GetComponentsInChildren<Collider>(true);
         var canvasComponents = GetComponentsInChildren<Canvas>(true);
-        var watherComponent = GetComponentInChildren<SushiController>(true);
-        var ChopstickComponent = GetComponentInChildren<ChopstickData>(true);
+       
 
         // Enable rendering:
         foreach (var component in rendererComponents)
@@ -90,10 +87,7 @@ public class SushiTarget : MonoBehaviour, ITrackableEventHandler
             component.enabled = true;
 
         //game
-        ChopstickComponent.enabled=true;
-
-        watherComponent.enabled = true;
-           
+       
     }
 
     

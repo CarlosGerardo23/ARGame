@@ -5,9 +5,11 @@ using UnityEngine;
 
 public class SushiData : MonoBehaviour
 {
+    public bool vuforia;
     public int id;
     public bool canMove;
     public float speed;
+    public float vuforiaSpeed;
     public bool destoyObject=false;
 
     Rigidbody rb;
@@ -33,11 +35,22 @@ public class SushiData : MonoBehaviour
 
     public void MoveTo(Vector3 endPoint)
     {
-        if(canMove)
+        if(!vuforia)
         {
-            Vector3 direction = endPoint - transform.position;
-            transform.Translate(direction.normalized * speed * Time.deltaTime);
+            if (canMove)
+            {
+                Vector3 direction = endPoint - transform.position;
+                transform.Translate(direction.normalized * speed * Time.deltaTime);
+            }
+        }else
+        {
+            if (canMove)
+            {
+                Vector3 direction = endPoint - transform.position;
+                transform.Translate(direction.normalized * vuforiaSpeed * Time.deltaTime);
+            }
         }
+        
         
     }
 
