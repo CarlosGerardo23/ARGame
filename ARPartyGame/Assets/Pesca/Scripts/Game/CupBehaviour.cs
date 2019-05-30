@@ -9,6 +9,7 @@ public class CupBehaviour : MonoBehaviour
     [SerializeField] UISushi sushiUi;
     [SerializeField] List<GameObject> suhi;
     [SerializeField] UnityEngine.UI.Text scoreText;
+    [SerializeField] UnityEngine.UI.Text currentsSushi;
     public List<int> idSushi;
    
 
@@ -48,6 +49,7 @@ public class CupBehaviour : MonoBehaviour
     private void CheckNewSushi()
     {
         bool foundSushi = false;
+        int indexNewSuhi = -1; ;
         if (chopstick.letGoSushi)
         {
             for (int i = 0; i < idSushi.Count; i++)
@@ -56,13 +58,18 @@ public class CupBehaviour : MonoBehaviour
                 {
                     suhi.Add(chopstick.sushi);
                     foundSushi = true;
+                    currentsSushi.text = (suhi.Count).ToString();
                     break;
                 }
             }
-            if (!foundSushi)
-            {
-                ClearCup();
-            }
+            //if (!foundSushi)
+            //{
+            //    ClearCup();
+            //}
+            
+            
+                
+            
             chopstick.letGoSushi = false;
         }
     }
@@ -92,9 +99,8 @@ public class CupBehaviour : MonoBehaviour
         if(suhi.Count>=3)
         {
             score += 1;
-            suhi.Clear();
-            SetIDSushi();
-            sushiUi.UpdateUI();
+            ClearCup();
+            currentsSushi.text = "0";
         }                
     }
     void UpdateScore()

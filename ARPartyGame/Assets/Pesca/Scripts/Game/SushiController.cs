@@ -2,8 +2,21 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+enum StateGame { TUTORIAL, GAME, STOP };
 public class SushiController : MonoBehaviour
 {
+   
+    [Header("Game state")]
+    [SerializeField] StateGame currentState = StateGame.TUTORIAL;
+
+    [Header("Tutorial values")]
+    [SerializeField] GameObject canvasTutorial;
+    [SerializeField] GameObject timerHolder;
+    [SerializeField] UnityEngine.UI.Text tutorialTimer;
+    [SerializeField] float timeTutorial;
+    public Timer tutorial;
+    bool startCountDown;
+
     [Header("Start points")]
     [SerializeField] GameObject startCenterPoint;
     [SerializeField] GameObject startLeftPoint;
@@ -50,10 +63,36 @@ public class SushiController : MonoBehaviour
         leftSushi = new List<GameObject>();
         rightSushi = new List<GameObject>();
         SetAllTimers();
+        //canvasTutorial.SetActive(false);
+      
     }
 
 
     void Update()
+    {
+        switch (currentState)
+        {
+            case StateGame.TUTORIAL:
+                UpdateTutorial();
+                break;
+            case StateGame.GAME:
+                UpdateGame();
+                break;
+            case StateGame.STOP:
+                break;
+            default:
+                break;
+        }
+    }
+
+    //Game State function
+
+    void UpdateTutorial()
+    {
+        CheckTimer();
+    }
+
+    void UpdateGame()
     {
         if (!chopstick.GetComponent<ChopstickData>().haveSushi)
         {
@@ -66,7 +105,29 @@ public class SushiController : MonoBehaviour
                 MoveBackChopstick();
         }
     }
+    //Tutorial Behaviour
+    public void StartGame()
+    {
+        canvasTutorial.SetActive(false);
+        timerHolder.SetActive(true);
+        tutorialTimer.gameObject.SetActive(true);
+        startCountDown =true;
+    }
+    private void CheckTimer()
+    {
+        if (!startCountDown)
+            return;
+        tutorialTimer.text = ((int)tutorial.CurrentTime).ToString();
+        if(tutorial.TimeFinish)
+        {
+            currentState = StateGame.GAME;
+            tutorialTimer.gameObject.SetActive(false);
+            timerHolder.SetActive(false);
+            return;
+        }
 
+        tutorial.UpdateTime(Time.deltaTime);
+    }
     //Move sushi
     void MoveAllSushi()
     {
@@ -79,9 +140,9 @@ public class SushiController : MonoBehaviour
     {
         for (int i = 0; i < centerSushi.Count; i++)
         {
-            
+
             SushiData sushi = centerSushi[i].GetComponent<SushiData>();
-            if(sushi.destoyObject)
+            if (sushi.destoyObject)
                 centerSushi.RemoveAt(i);
             if (sushi.CheckFinish(endCenterPoint.transform.position, pointDistanceSushi) || sushi.destoyObject)
             {
@@ -119,7 +180,7 @@ public class SushiController : MonoBehaviour
             SushiData sushi = rightSushi[i].GetComponent<SushiData>();
             if (sushi.destoyObject)
                 rightSushi.RemoveAt(i);
-            
+
             if (sushi.CheckFinish(endRightPoint.transform.position, pointDistanceSushi) || sushi.destoyObject)
             {
                 sushi.canMove = false;
@@ -207,6 +268,11 @@ public class SushiController : MonoBehaviour
         leftTimer.SetTime(GetRandomNumber(2, 5));
         leftTimer.StartTimer = true;
 
+        //tutorial time
+        tutorial = new Timer();
+        tutorial.SetTime(timeTutorial);
+        tutorial.StartTimer = true;
+
 
     }
     private void UpdateAllTimers(float time)
@@ -222,7 +288,7 @@ public class SushiController : MonoBehaviour
     {
         ChopstickData chopstikBehaviour = chopstick.GetComponent<ChopstickData>();
 #if UNITY_EDITOR
-        if (!startMoving&&!CanReturnCupstick)
+        if (!startMoving && !CanReturnCupstick)
             CheckSwipeEditor();
         else
             MoveToPointState();
@@ -316,6 +382,7 @@ public class SushiController : MonoBehaviour
                     newState = State.CENTER;
                     break;
                 case State.LEFT:
+                    newState = State.RIGHT;
                     Debug.Log("Can't move");
                     break;
                 default:
@@ -341,6 +408,13 @@ public class SushiController : MonoBehaviour
                     break;
             }
         }
+        if (goTo == Vector3.zero)
+        {
+            startMoving = false;
+            return;
+        }
+
+
         chopstikBehaviour.MoveTo(goTo);
 
         if (chopstikBehaviour.CheckFinish(goTo, pointDistanceChopstick))

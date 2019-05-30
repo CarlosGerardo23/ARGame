@@ -8,6 +8,10 @@ public class GameManager : MonoBehaviour
     [SerializeField] int time;
     [SerializeField] UnityEngine.UI.Text scoreText;
     [SerializeField] GameObject canvasFinal;
+    [SerializeField] UnityEngine.UI.Text timeText;
+    [SerializeField] SushiController controller;
+
+
     Timer gameTimer;
 
     private void Start()
@@ -19,13 +23,24 @@ public class GameManager : MonoBehaviour
 
     private void Update()
     {
-        gameTimer.UpdateTime(Time.deltaTime);
-        if (gameTimer.TimeFinish)
-            FinalGame();
+        if(controller.tutorial.TimeFinish)
+        {
+            gameTimer.UpdateTime(Time.deltaTime);
+            if (gameTimer.TimeFinish)
+                FinalGame();
+            else
+                UpdateUITime();
+        }
+        
     }
     private void FinalGame()
     {
         scoreText.text = cup.score.ToString();
         canvasFinal.SetActive(true);
     }
+    private void UpdateUITime()
+    {
+        timeText.text = ((int) gameTimer.CurrentTime+1).ToString();
+    }
+
 }

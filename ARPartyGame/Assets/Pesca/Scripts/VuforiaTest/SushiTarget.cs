@@ -6,7 +6,11 @@ using Vuforia;
 
 public class SushiTarget : MonoBehaviour, ITrackableEventHandler
 {
-   
+    [System.Serializable]
+    public enum TargetState { START,TUTORIAL,GAME};
+
+    [SerializeField] TargetState GameState;
+    [SerializeField] GameObject startButon;
     void Start()
     {
         mTrackableBehaviour = GetComponent<TrackableBehaviour>();
@@ -48,47 +52,80 @@ public class SushiTarget : MonoBehaviour, ITrackableEventHandler
 
     private void OnTrackingLost()
     {
-        var rendererComponents = GetComponentsInChildren<Renderer>(true);
-        var colliderComponents = GetComponentsInChildren<Collider>(true);
-        var canvasComponents = GetComponentsInChildren<Canvas>(true);
-        
-        // Enable rendering:
-        foreach (var component in rendererComponents)
-            component.enabled = false;
+        switch (GameState)
+        {
+            case TargetState.START:
+                startButon.SetActive(false);
+                UnloadCup();
+                break;
+            case TargetState.TUTORIAL:
+                UnloadCup();
+                break;
+            case TargetState.GAME:
+               
+                break;
+            default:
+                break;
+        }
 
-        // Enable colliders:
-        foreach (var component in colliderComponents)
-            component.enabled = false;
+       
 
-        // Enable canvas':
-        foreach (var component in canvasComponents)
-            component.enabled = false;
 
-        
     }
 
     private void OnTrackingFound()
     {
+        switch (GameState)
+        {
+            case TargetState.START:
+                startButon.SetActive(true);
+                break;
+            case TargetState.TUTORIAL:
+                var rendererComponents = GetComponentsInChildren<Renderer>(true);
+                var colliderComponents = GetComponentsInChildren<Collider>(true);
+                var canvasComponents = GetComponentsInChildren<Canvas>(true);
+
+
+                // Enable rendering:
+                foreach (var component in rendererComponents)
+                    component.enabled = true;
+
+                // Enable colliders:
+                foreach (var component in colliderComponents)
+                    component.enabled = true;
+
+                // Enable canvas':
+                foreach (var component in canvasComponents)
+                    component.enabled = true;
+                break;
+            case TargetState.GAME:
+                break;
+            default:
+                break;
+        }
+       
+    }   
+
+    public void ChangeGameState(int newState )
+    {
+        GameState =(TargetState) newState;
+    }
+    private void UnloadCup()
+    {
         var rendererComponents = GetComponentsInChildren<Renderer>(true);
         var colliderComponents = GetComponentsInChildren<Collider>(true);
         var canvasComponents = GetComponentsInChildren<Canvas>(true);
-       
 
         // Enable rendering:
         foreach (var component in rendererComponents)
-            component.enabled = true;
+            component.enabled = false;
 
         // Enable colliders:
         foreach (var component in colliderComponents)
-            component.enabled = true;
+            component.enabled = false;
 
         // Enable canvas':
         foreach (var component in canvasComponents)
-            component.enabled = true;
-
-        //game
-       
+            component.enabled = false;
     }
-
-    
 }
