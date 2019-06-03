@@ -24,7 +24,7 @@ public class ChopstickData : MonoBehaviour
     void Start()
     {
         chopstickState = State.CENTER;
-        grab.interactable = false;
+        grab.gameObject.SetActive(false);
     }
 
     private void Update()
@@ -57,7 +57,7 @@ public class ChopstickData : MonoBehaviour
     {
         if (other.tag=="Sushi")
         {
-            grab.interactable = true;
+            grab.gameObject.SetActive(true);
             sushi = other.gameObject;
            
         }
@@ -66,7 +66,7 @@ public class ChopstickData : MonoBehaviour
     {
         if (other.tag == "Sushi")
         {
-            grab.interactable = false;
+            grab.gameObject.SetActive(false);
             sushi = null;
 
         }
@@ -95,7 +95,7 @@ public class ChopstickData : MonoBehaviour
             sushi.transform.parent = plate.transform;
             sushi.GetComponent<Rigidbody>().useGravity=true;
             haveSushi = false;
-            grab.interactable = false;
+            grab.gameObject.SetActive(false);
             letGoSushi = true;
         }
     }

@@ -11,9 +11,9 @@ public class CupBehaviour : MonoBehaviour
     [SerializeField] UnityEngine.UI.Text scoreText;
     [SerializeField] UnityEngine.UI.Text currentsSushi;
     public List<int> idSushi;
-   
 
-   public float score = 0; 
+
+    public float score = 0;
 
     Renderer myRenderer;
 
@@ -28,7 +28,7 @@ public class CupBehaviour : MonoBehaviour
     {
         if (myRenderer.isVisible)
         {
-            CheckNewSushi();         
+            CheckNewSushi();
         }
         CheckScore();
         UpdateScore();
@@ -56,20 +56,24 @@ public class CupBehaviour : MonoBehaviour
             {
                 if (idSushi[i] == chopstick.sushi.GetComponent<SushiData>().id)
                 {
-                    suhi.Add(chopstick.sushi);
-                    foundSushi = true;
-                    currentsSushi.text = (suhi.Count).ToString();
-                    break;
+                    score += 3;
+                    chopstick.letGoSushi = false;
+                    return;
+                   // suhi.Add(chopstick.sushi);
+                    //foundSushi = true;
+                    //currentsSushi.text = (suhi.Count).ToString();
+                    //break;
                 }
             }
+            score+= 1;
             //if (!foundSushi)
             //{
             //    ClearCup();
             //}
-            
-            
-                
-            
+
+
+
+
             chopstick.letGoSushi = false;
         }
     }
@@ -96,12 +100,12 @@ public class CupBehaviour : MonoBehaviour
     }
     void CheckScore()
     {
-        if(suhi.Count>=3)
-        {
-            score += 1;
-            ClearCup();
-            currentsSushi.text = "0";
-        }                
+        //if (suhi.Count >= 3)
+        //{
+        //    score += 1;
+        //    ClearCup();
+        //    currentsSushi.text = "0";
+        //}
     }
     void UpdateScore()
     {

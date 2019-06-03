@@ -156,7 +156,7 @@ MonoBehaviour:
   vuforia: 0
   id: 7
   canMove: 0
-  speed: 4
+  speed: 5
   vuforiaSpeed: 0
   destoyObject: 0
 --- !u!1 &6171612546042837044
